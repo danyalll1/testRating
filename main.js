@@ -1,60 +1,40 @@
 import '/public/styles.css'
-const qualityTrack = document.querySelector('.app__quality')
-const visualTrack = document.querySelector('.app__visual')
-const ergonomicTrack = document.querySelector('.app__ergonomic')
+const tracks = document.querySelectorAll('[data-param]')
 const  buttons = document.querySelector('.app__buttons')
-let option = 3
-let ratings = {
-    quality: 0,
-    visual: 0,
-    ergonomic: 0
-}
+let option = Number(buttons.querySelector('.active').dataset.option)
+let ratings = getRatingOptions(tracks)
 let data
 
 async function getData() {
     return fetch('users.json')
+
         .then(res => {
             if (res.ok) {
-                console.log('Получено')
                 return res.json()
             }
         })
+
+        .then(res => {
+            data = res.data.items
+            getExpectedValue(data, option)
+        })
+
         .catch(err => {
-            console.log(err)
             return null
         });
 }
-
-async function dataProcess() {
-    try {
-        data = await getData()
-        getExpectedValue(data.data.items, option)
-    } catch (err) {
-        console.error(err)
-    }
-}
-
 function filterByDate(data, days) {
     const currentDate = new Date();
-    const filterDate = new Date(currentDate);
-    filterDate.setDate(currentDate.getDate() - days);
-
-    return data.filter(item => new Date(item.created_at) >= filterDate);
-}
-
-function getRatingByOption(data, option) {
-    switch (option) {
-        case 30:
-            return filterByDate(data, 30);
-        case 7:
-            return filterByDate(data, 7);
-        default:
-            return data;
+    if (days === 0){
+        return data
+    }else{
+        return data.filter(item => new Date(item.created_at).getDate() >= currentDate.getDate() - days)
     }
-}
 
+
+}
 function getExpectedValue(data, option) {
-    let filteredData = getRatingByOption(data, option)
+    let filteredData = filterByDate(data,option)
     let countOfMarks = filteredData.length
     filteredData.forEach(el => {
         el.ratings.forEach(item => {
@@ -72,18 +52,30 @@ function getExpectedValue(data, option) {
 
         })
     })
-    ratings.quality = ratings.quality/countOfMarks
-    ratings.visual = ratings.visual/countOfMarks
-    ratings.ergonomic = ratings.ergonomic/countOfMarks
-    qualityTrack.querySelector('.app__mark').innerHTML = `${ratings.quality.toFixed(1)}/5`
-    qualityTrack.querySelector('.app__progress').style = `width: ${ratings.quality/5*100}%`
-    visualTrack.querySelector('.app__mark').innerHTML = `${ratings.visual.toFixed(1)}/5`
-    visualTrack.querySelector('.app__progress').style = `width: ${ratings.visual/5*100}%`
-    ergonomicTrack.querySelector('.app__mark').innerHTML = `${ratings.ergonomic.toFixed(1)}/5`
-    ergonomicTrack.querySelector('.app__progress').style = `width: ${ratings.ergonomic/5*100}%`
-    ratings.quality = 0
-    ratings.visual = 0
-    ratings.ergonomic = 0
+    Object.keys(ratings).forEach(rating=>{
+        let element = document.querySelector(`[data-param=${rating}]`)
+        console.log(rating)
+        option === 0 && rating === 'quality' ?  showUntilLeft(element,ratings[rating],countOfMarks) : element.querySelector('.app__count-container').classList.add('hidden')
+        ratings[rating] = ratings[rating] / countOfMarks
+        element.querySelector(`[data-param=${rating}] .app__mark`).textContent = `${ratings[rating].toFixed(1)}/5`
+        element.querySelector('.app__progress').style = `width: ${ratings[rating]/5*100}%`
+        ratings[rating] = 0
+    })
+}
+
+function showUntilLeft(element, param, count){
+    element.querySelector('.app__count').textContent = leftUntil(param,4,count)
+    element.querySelector('.app__count-container').classList.remove('hidden')
+}
+
+
+function leftUntil(currRating,num, count){
+    let i = 0
+    while (currRating/count < num){
+        currRating +=5
+        i++
+    }
+    return i
 }
 
 function buttonsEventHandler(event){
@@ -93,15 +85,22 @@ function buttonsEventHandler(event){
         })
         event.target.classList.add('active')
         option = Number(event.target.dataset.option)
-        getExpectedValue(data.data.items, option)
-
+        getExpectedValue(data, option)
     }
 }
+function getRatingOptions (arrayOfElements){
+    let outputObject ={}
+    arrayOfElements.forEach(el=>{
+        outputObject[el.dataset.param] = 0
+    })
+    return outputObject
+}
+
+getRatingOptions(tracks)
 
 buttons.addEventListener('click', buttonsEventHandler)
 
-await dataProcess()
-
+await getData()
 
 
 

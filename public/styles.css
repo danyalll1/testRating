@@ -73,3 +73,22 @@ body{
 .app__ergonomic .app__progress{
     background-color: #ec0bac;
 }
+
+.app__count-container{
+    border-radius: 4px;
+    padding: 4px 8px;
+    background-color: #F5F5F5;
+    display: flex;
+    gap: 8px;
+}
+
+.app__count-container.hidden{
+    display: none;
+}
+
+.app__count{
+    font-weight: 600;
+    display: flex;
+    justify-content: center;
+}
+

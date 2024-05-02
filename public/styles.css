@@ -27,7 +27,7 @@ body{
 .app__button{
     cursor: pointer;
     border: solid 2px transparent;
-    transition: border-color ease 0.3s;
+    transition: border-color ease 0.3s, background-color ease 0.3s;
     border-radius: 4px;
     font-weight: 500;
     background-color: #36cf5a;
@@ -62,19 +62,22 @@ body{
     border-radius: 12px;
 }
 
-.app__quality .app__progress{
+.app__quality .app__progress[data-color="quality"]{
     background-color: #11dddd;
 }
 
-.app__visual .app__progress{
+.app__quality .app__progress[data-color="visual"]{
     background-color: #3c0bec;
 }
 
-.app__ergonomic .app__progress{
+.app__quality .app__progress[data-color="ergonomic"]{
     background-color: #ec0bac;
 }
 
 .app__count-container{
+    align-items: center;
+    height: 28px;
+    transition: opacity ease 0.3s, height ease 0.3s;
     border-radius: 4px;
     padding: 4px 8px;
     background-color: #F5F5F5;
@@ -83,7 +86,8 @@ body{
 }
 
 .app__count-container.hidden{
-    display: none;
+    height: 0;
+    opacity: 0;
 }
 
 .app__count{

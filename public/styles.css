@@ -26,21 +26,21 @@ body{
 
 .app__button{
     cursor: pointer;
-    border: solid 2px transparent;
+    border: solid 1px transparent;
     transition: border-color ease 0.3s, background-color ease 0.3s;
     border-radius: 4px;
     font-weight: 500;
-    background-color: #36cf5a;
+    background-color: #23e678;
     padding: 8px 12px;
-    color: white;
+    color: #ffffff;
 }
 
 .app__button:hover:not(.active){
-    background-color: #29a643;
+    background-color: #34b171;
 }
 
 .app__button.active{
-    border: solid 2px #0d3316;
+    border: solid 1px #a1aca6;
 }
 
 .app__quality, .app__visual, .app__ergonomic{

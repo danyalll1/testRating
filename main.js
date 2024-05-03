@@ -1,7 +1,6 @@
 import '/public/styles.css'
 
-const tracks = document.querySelectorAll('[data-param]')
-const buttons = document.querySelector('.app__buttons')
+let buttons = document.querySelector('.app__buttons')
 let option = Number(buttons.querySelector('.active').dataset.option)
 let ratings = {}
 let leftUntilFour = 4
@@ -18,6 +17,10 @@ async function getData() {
             data = res.data.items
             ratings = getRatingOptions(data)
             getExpectedValue(data, option)
+        })
+        .then(()=>{
+            buttons = document.querySelector('.app__buttons')
+            buttons.addEventListener('click', buttonsEventHandler)
         })
         .catch(err => {
             return null
@@ -40,18 +43,7 @@ function getExpectedValue(data, option) {
     let countOfMarks = filteredData.length
     filteredData.forEach(el => {
         el.ratings.forEach(item => {
-            switch (item.text) {
-                case "качество товара":
-                    ratings.quality += item.rating
-                    break
-                case "вид товара":
-                    ratings.visual += item.rating
-                    break
-                case "удобство товара":
-                    ratings.ergonomic += item.rating
-                    break
-            }
-
+            ratings[item.id] += item.rating
         })
     })
     Object.keys(ratings).forEach(rating => {
@@ -80,7 +72,6 @@ function leftUntil(currRating, num, count) {
 }
 
 function buttonsEventHandler(event) {
-    console.log('listen')
     if (event.target.closest('.app__button')) {
         buttons.querySelectorAll('.app__button').forEach(el => {
             el.classList.remove('active')
@@ -98,7 +89,7 @@ function getRatingOptions(arrayOfElements) {
         document.querySelector('.app').innerHTML +=
             '<div class="app__quality" data-param=\'' + el.id + '\'>\n' +
             '        <div class="app__param">\n' +
-            '            <div>качество</div>\n' +
+            '            <div>' + el.text + '</div>\n' +
             '            <div>-</div>\n' +
             '            <div class="app__mark">2/5</div>\n' +
             '        </div>\n' +
@@ -121,7 +112,8 @@ function getRatingOptions(arrayOfElements) {
 
 
 await getData()
-buttons.addEventListener('click', buttonsEventHandler)
+
+
 
 
 

@@ -16,6 +16,7 @@ async function getData() {
         .then(res => {
             data = res.data.items
             ratings = getRatingOptions(data)
+            setRatingsInnerHtml(data)
             getExpectedValue(data, option)
         })
         .then(()=>{
@@ -87,28 +88,33 @@ function getRatingOptions(arrayOfElements) {
     let outputObject = {}
     arrayOfElements[0].ratings.forEach(el =>{
         outputObject[el.id] = 0
-        document.querySelector('.app').insertAdjacentHTML('beforeend',
-            '<div class="app__quality" data-param=\'' + el.id + '\'>\n' +
-            '        <div class="app__param">\n' +
-            '            <div>' + el.text + '</div>\n' +
-            '            <div>-</div>\n' +
-            '            <div class="app__mark">2/5</div>\n' +
-            '        </div>\n' +
-            '        <div class="app__progress" data-color=\'' + el.id + '\'></div>\n' +
-            '        <div class="app__count-container">\n' +
-            '            5 до 4\n' +
-            '            <div>\n' +
-            '                -\n' +
-            '            </div>\n' +
-            '            <div class="app__count">\n' +
-            '                12\n' +
-            '            </div>\n' +
-            '        </div>\n' +
-            '    </div>'
-        )
-
     })
     return outputObject
+}
+
+function setRatingsInnerHtml(arrayOfElements){
+    arrayOfElements[0].ratings.forEach(el =>{
+        document.querySelector('.app').insertAdjacentHTML('beforeend',
+            `<div class="app__quality" data-param=${el.id}>
+                    <div class="app__param">
+                       <div>${el.text}</div>
+                       <div>-</div>
+                        <div class="app__mark">2/5</div>
+                   </div>
+                    <div class="app__progress" data-color=${el.id}></div>
+                    <div class="app__count-container">
+                        5 до 4
+                        <div>
+                           -
+                        </div>
+                        <div class="app__count">
+                            12
+                        </div>
+                    </div>
+                </div>`
+        )
+    })
+
 }
 
 await getData()

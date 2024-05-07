@@ -19,10 +19,10 @@ async function getData() {
             getExpectedValue(data, option)
         })
         .then(()=>{
-            buttons = document.querySelector('.app__buttons')
-            buttons.addEventListener('click', buttonsEventHandler)
+
         })
         .catch(err => {
+            console.log(err);
             return null
         });
 }
@@ -46,14 +46,15 @@ function getExpectedValue(data, option) {
             ratings[item.id] += item.rating
         })
     })
-    Object.keys(ratings).forEach(rating => {
-        let element = document.querySelector(`[data-param=${rating}]`)
-        option === 0 && rating === 'quality' ? showUntilLeft(element, ratings[rating], countOfMarks) : element.querySelector('.app__count-container').classList.add('hidden')
-        ratings[rating] = ratings[rating] / countOfMarks
-        element.querySelector(`[data-param=${rating}] .app__mark`).textContent = `${ratings[rating].toFixed(1)}/5`
-        element.querySelector('.app__progress').style = `width: ${ratings[rating] / 5 * 100}%`
-        ratings[rating] = 0
-    })
+
+    for(let key  in ratings){
+        let element = document.querySelector(`[data-param=${key}]`)
+        option === 0 && key === 'quality' ? showUntilLeft(element, ratings[key], countOfMarks) : element.querySelector('.app__count-container').classList.add('hidden')
+        ratings[key] = ratings[key] / countOfMarks
+        element.querySelector(`[data-param=${key}] .app__mark`).textContent = `${ratings[key].toFixed(1)}/5`
+        element.querySelector('.app__progress').style = `width: ${ratings[key] / 5 * 100}%`
+        ratings[key] = 0
+    }
 }
 
 function showUntilLeft(element, param, count) {
@@ -86,7 +87,7 @@ function getRatingOptions(arrayOfElements) {
     let outputObject = {}
     arrayOfElements[0].ratings.forEach(el =>{
         outputObject[el.id] = 0
-        document.querySelector('.app').innerHTML +=
+        document.querySelector('.app').insertAdjacentHTML('beforeend',
             '<div class="app__quality" data-param=\'' + el.id + '\'>\n' +
             '        <div class="app__param">\n' +
             '            <div>' + el.text + '</div>\n' +
@@ -104,16 +105,15 @@ function getRatingOptions(arrayOfElements) {
             '            </div>\n' +
             '        </div>\n' +
             '    </div>'
+        )
+
     })
     return outputObject
 }
 
-
-
-
 await getData()
-
-
+buttons = document.querySelector('.app__buttons')
+buttons.addEventListener('click', buttonsEventHandler)
 
 
 
